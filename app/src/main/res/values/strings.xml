@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Dojo-Giffer</string>
+    <string name="hello_dojo">Hello Dojo!</string>
 </resources>
