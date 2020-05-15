@@ -1,0 +1,2 @@
+rootProject.name='Dojo-Giffer'
+include ':app'
