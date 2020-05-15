@@ -13,25 +13,30 @@ class ShowResult : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_show_result)
         // Get the Intent that started this activity and extract the string
         val message = intent.getStringExtra(EXTRA_MESSAGE)
+        val result=run("https://jsonplaceholder.typicode.com/posts/1");
 
-        // Capture the layout's TextView and set the string as its text
-        val textView = findViewById<TextView>(R.id.textView).apply {
-            text = message
-        }
 
     }
 
     fun run(url: String) {
+
         val request = Request.Builder()
             .url(url)
             .build()
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {}
-            override fun onResponse(call: Call, response: Response) = println(response.body()?.string())
+            override fun onResponse(call: Call, response: Response) {
+                println(response.body()?.string())
+                // Capture the layout's TextView and set the string as its text
+                val textView = findViewById<TextView>(R.id.textView).apply {
+                    text = response.body()?.string()
+                }
+            }
         })
     }
 }
