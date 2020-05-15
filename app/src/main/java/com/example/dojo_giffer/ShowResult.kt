@@ -17,11 +17,25 @@ class ShowResult : AppCompatActivity() {
         setContentView(R.layout.activity_show_result)
         // Get the Intent that started this activity and extract the string
         val message = intent.getStringExtra(EXTRA_MESSAGE)
-        val result=run("https://jsonplaceholder.typicode.com/posts/1");
 
+        val result = doGetRequest("https://jsonplaceholder.typicode.com/posts/1")
 
+        val textView = findViewById<TextView>(R.id.textView).apply {
+            text = result
+        }
     }
 
+    private fun doGetRequest(url: String): String? {
+        val request = Request.Builder()
+            .url(url)
+            .build();
+
+        val response = client.newCall(request).execute()
+        return response.body()?.string()
+    }
+
+
+    // See https://square.github.io/okhttp/recipes/
     fun run(url: String) {
 
         val request = Request.Builder()
@@ -32,10 +46,8 @@ class ShowResult : AppCompatActivity() {
             override fun onFailure(call: Call, e: IOException) {}
             override fun onResponse(call: Call, response: Response) {
                 println(response.body()?.string())
-                // Capture the layout's TextView and set the string as its text
-                val textView = findViewById<TextView>(R.id.textView).apply {
-                    text = response.body()?.string()
-                }
+                // TODO: WE NEED TO UPDATE THE VIEW HERE
+
             }
         })
     }
