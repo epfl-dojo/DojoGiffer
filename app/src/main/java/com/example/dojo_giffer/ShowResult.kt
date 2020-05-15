@@ -5,11 +5,13 @@ import android.os.Bundle
 import android.provider.AlarmClock.EXTRA_MESSAGE
 import android.widget.TextView
 import okhttp3.*
+import org.json.JSONObject
 import java.io.IOException
 
 class ShowResult : AppCompatActivity() {
 
     private val client = OkHttpClient()
+    private var JSONdata = JSONObject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,20 +20,23 @@ class ShowResult : AppCompatActivity() {
         // Get the Intent that started this activity and extract the string
         val message = intent.getStringExtra(EXTRA_MESSAGE)
 
-        val result = doGetRequest("https://jsonplaceholder.typicode.com/posts/1")
-
-        val textView = findViewById<TextView>(R.id.textView).apply {
-            text = result
-        }
+        doGetRequest("https://jsonplaceholder.typicode.com/posts/1")
     }
 
-    private fun doGetRequest(url: String): String? {
+    private fun doGetRequest(url: String) {
         val request = Request.Builder()
             .url(url)
             .build();
 
-        val response = client.newCall(request).execute()
-        return response.body()?.string()
+        Thread({
+            val response = client.newCall(request).execute()
+            JSONdata = JSONObject(response.body()?.string())
+            runOnUiThread({
+                findViewById<TextView>(R.id.textView).apply {
+                    text = JSONdata.getString("id")
+                }
+            })
+        }).start()
     }
 
 
@@ -46,8 +51,9 @@ class ShowResult : AppCompatActivity() {
             override fun onFailure(call: Call, e: IOException) {}
             override fun onResponse(call: Call, response: Response) {
                 println(response.body()?.string())
-                // TODO: WE NEED TO UPDATE THE VIEW HERE
 
+                // TODO: WE NEED TO UPDATE THE VIEW HERE
+                println(JSONdata.get("id"))
             }
         })
     }
